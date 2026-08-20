@@ -1,0 +1,25 @@
+package com.abdo.JobManagement.entities.user;
+
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
+
+@Entity
+@Table(name ="candidate_profiles")
+public class Condidateprofile extends User{
+    @Size(max = 300)
+    private String bio;
+
+    @Size(max = 500)
+    @Column(name = "cv_url")
+    private String cvurl;
+
+    @Size(max = 20)
+    private String phone;
+
+    public Role getrole(){
+        return Role.CONDIDATE;
+    }
+}
