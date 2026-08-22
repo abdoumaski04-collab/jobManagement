@@ -2,11 +2,15 @@ package com.abdo.JobManagement.entities;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Table(name = "job_offers")
 @Entity
+@Setter
+@Getter
 public class joboffer {
 
     @Id
