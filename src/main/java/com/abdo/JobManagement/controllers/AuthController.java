@@ -41,6 +41,7 @@ public class AuthController {
             user=new Recruiter();
         }
         else {
+
             user = new Condidateprofile();
         }
         user.setEmail(request.getEmail());

@@ -1,12 +1,14 @@
 package com.abdo.JobManagement.entities.user;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.abdo.JobManagement.entities.skill;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name ="candidate_profiles")
@@ -26,4 +28,12 @@ public class Condidateprofile extends User{
     public Role getrole(){
         return Role.CONDIDATE;
     }
+
+    @ManyToMany
+    @JoinTable(
+            name="candidate_skill",
+            joinColumns =@JoinColumn(name = "CandidateId"),
+            inverseJoinColumns=@JoinColumn(name= "skillId")
+    )
+    private Set<skill> skills=new HashSet<>();
 }
