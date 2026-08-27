@@ -37,4 +37,6 @@ public interface JobofferRepository extends JpaRepository<joboffer, Long> {
             @Param("companyid") Long companyid,
             Pageable pageable
     );
+
+
 }

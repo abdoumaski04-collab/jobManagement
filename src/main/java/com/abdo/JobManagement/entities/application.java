@@ -3,6 +3,7 @@ package com.abdo.JobManagement.entities;
 import com.abdo.JobManagement.entities.user.Condidateprofile;
 import com.abdo.JobManagement.entities.user.Recruiter;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,11 @@ import java.time.LocalDateTime;
         uniqueConstraints = @UniqueConstraint(columnNames = {"candidat_id", "joboffer_id"})
 )
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class application {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +37,15 @@ public class application {
     @Column(nullable = false,name = "applied_at")
     private LocalDateTime appliedat=LocalDateTime.now();
 
-    @Column(nullable = false)
+    @Column(nullable = false,length = 150)
     private String cvsnapshoturl;
+
+    public application(Condidateprofile candidate,joboffer offer,applicationstatus status,String url){
+        this.condidat=candidate;
+        this.offer=offer;
+        this.status=status;
+        this.cvsnapshoturl=url;
+    }
 
     // càd on a pris une decision et la reponse sur application reçu
     public boolean iffinal(){
