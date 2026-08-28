@@ -28,6 +28,21 @@ spring:
       max-file-size: (size)
       max-request-size: (size)
       file-size-threshold: (size)
+  
+  mail:
+    port: 587
+    host: smtp.gmail.com
+    username: (mail of sender)
+    password: (password app mail)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          timeout: 5000 
+          writetimeout: 5000
+          connectiontimeout: 5000
 app:
   cv:
     upload-dir: (chemin courant)

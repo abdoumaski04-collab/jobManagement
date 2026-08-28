@@ -5,16 +5,14 @@ import com.abdo.JobManagement.dto.application.ApplicationResponse;
 import com.abdo.JobManagement.dto.application.MyApplicationsResponse;
 import com.abdo.JobManagement.entities.application;
 import com.abdo.JobManagement.entities.applicationstatus;
+import com.abdo.JobManagement.entities.company;
 import com.abdo.JobManagement.entities.joboffer;
 import com.abdo.JobManagement.entities.user.Condidateprofile;
 import com.abdo.JobManagement.entities.user.Recruiter;
 import com.abdo.JobManagement.entities.user.User;
 import com.abdo.JobManagement.exceptions.OperationWontReapeat;
 import com.abdo.JobManagement.exceptions.RessourceNotFoundException;
-import com.abdo.JobManagement.repositories.ApplicationRepository;
-import com.abdo.JobManagement.repositories.CandidateProfileRepository;
-import com.abdo.JobManagement.repositories.JobofferRepository;
-import com.abdo.JobManagement.repositories.RecruiterRepo;
+import com.abdo.JobManagement.repositories.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,6 +33,8 @@ private final ApplicationRepository apprepo;
 private final CandidateProfileRepository condidaterepo;
 private final JobofferRepository jobofferrepo;
 private final RecruiterRepo recruiterrepo;
+private final EmailService emailser;
+private final CompanyRepository companyrepo;
 
 
 @Transactional
@@ -53,7 +53,16 @@ public ApplicationResponse addApplication(User user,Long jobofferId){
 
 
     application newapp=new application(candidate,offer, applicationstatus.PENDING,candidate.getCvurl());
+
+    String joboffertitle=offer.getTitle();
+    String candidatename=candidate.getFirstname()+" "+candidate.getLastname();
+
+    Long companyId=offer.getCompany().getId();
+    Long RecuiterId=offer.getCompany().getOwner().getId();
+    company company=companyrepo.findById(companyId).orElseThrow(()->new RessourceNotFoundException("Company not found"));
+    Recruiter recruiter=recruiterrepo.findById(RecuiterId).orElseThrow(()->new RessourceNotFoundException("recruiter not found"));
     apprepo.save(newapp);
+    emailser.sendNewApplicatioNotification(recruiter.getEmail(),joboffertitle,candidatename,company.getName());
     ApplicationResponse appresponse= new ApplicationResponse(newapp.getId(), userId, jobofferId, newapp.getOffer().getTitle(), newapp.getAppliedat(), newapp.getStatus());
     return appresponse;
 }
@@ -119,7 +128,10 @@ public ApplicationResponse refuseApplication(Long idApp, User user){
         throw new AccessDeniedException("yu are not the owner of joboffer");
 
     app.setStatus(applicationstatus.REJECTED);
+    Long condidatId=app.getCondidat().getId();
+    Condidateprofile candidat=condidaterepo.findById(condidatId).orElseThrow(()->new RessourceNotFoundException("condidate not found "));
     apprepo.save(app);
+    emailser.sendUpdateApllicationStatus(candidat.getEmail(),joboffer.getTitle(),app.getStatus());
      ApplicationResponse appr= new ApplicationResponse(app.getId(), user.getId(), app.getOffer().getId(), app.getOffer().getTitle(), app.getAppliedat(), app.getStatus());
     return appr;
 }
@@ -134,8 +146,11 @@ public ApplicationResponse acceptApplication(Long idApp,User user){
         throw new AccessDeniedException("yu are not the owner of joboffer");
 
     app.setStatus(applicationstatus.ACCEPTED);
-    apprepo.save(app);
-    ApplicationResponse appr= new ApplicationResponse(app.getId(), user.getId(), app.getOffer().getId(), app.getOffer().getTitle(), app.getAppliedat(), app.getStatus());
+        Long condidatId=app.getCondidat().getId();
+        Condidateprofile candidat=condidaterepo.findById(condidatId).orElseThrow(()->new RessourceNotFoundException("condidate not found "));
+        apprepo.save(app);
+        emailser.sendUpdateApllicationStatus(candidat.getEmail(),joboffer.getTitle(),app.getStatus());
+        ApplicationResponse appr= new ApplicationResponse(app.getId(), user.getId(), app.getOffer().getId(), app.getOffer().getTitle(), app.getAppliedat(), app.getStatus());
     return appr;
 
 }
