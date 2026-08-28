@@ -5,7 +5,7 @@ spring:
       active: dev
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/dbname
+    url: (chemin)
     username: 
     password: 
     driver-class-name: org.postgresql.Driver
@@ -23,6 +23,14 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: false
+  servlet:
+    multipart:
+      max-file-size: (size)
+      max-request-size: (size)
+      file-size-threshold: (size)
+app:
+  cv:
+    upload-dir: (chemin courant)
 
 
 server:
