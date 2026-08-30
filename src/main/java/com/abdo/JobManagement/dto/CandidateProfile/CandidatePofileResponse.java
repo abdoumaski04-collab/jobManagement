@@ -15,4 +15,5 @@ public class CandidatePofileResponse {
     private String lastname;
     private String bio;
     private String phone;
+
 }

@@ -1,6 +1,7 @@
 package com.abdo.JobManagement.controllers;
 
 
+import com.abdo.JobManagement.dto.joboffer.JobofferResponse;
 import com.abdo.JobManagement.entities.joboffer;
 import com.abdo.JobManagement.entities.user.User;
 import com.abdo.JobManagement.services.JobOfferSearchservice;
@@ -22,14 +23,14 @@ public class JobOfferSearchController {
     private final JobOfferSearchservice service;
 
     @GetMapping
-        public ResponseEntity<Page<joboffer>> searchjoboffers(
+        public ResponseEntity<Page<JobofferResponse>> searchjoboffers(
                 @RequestParam(required = false) String keyword,
                 @RequestParam(required = false) String location,
                 @RequestParam(required = false) Long companyid,
                 Pageable pageable,
                 @AuthenticationPrincipal User currentuser
                 ){
-        Page<joboffer> results=service.searchjoboffer(keyword,location,companyid,pageable,currentuser);
+        Page<JobofferResponse> results=service.searchjoboffer(keyword,location,companyid,pageable,currentuser);
         return ResponseEntity.ok(results);
         }
 }

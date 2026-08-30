@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface JobofferRepository extends JpaRepository<joboffer, Long> {
 
     @Query("""
@@ -38,5 +40,7 @@ public interface JobofferRepository extends JpaRepository<joboffer, Long> {
             Pageable pageable
     );
 
+    List<joboffer> findByCompanyId(Long id);
 
+    Page<joboffer> findByCompanyOwnerId(Long ownerId, Pageable pageable);
 }

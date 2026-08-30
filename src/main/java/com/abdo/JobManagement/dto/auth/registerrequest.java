@@ -35,6 +35,7 @@ public class registerrequest {
 
     public enum RegisterRole{
         RECRUITER,
-        CANDIDATE
+        CANDIDATE,
+        ADMIN
     }
 }

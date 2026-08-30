@@ -22,7 +22,7 @@ public class ApplicationController {
 
     private final ApplicationService appser;
 
-    @PostMapping("/{id}/add")
+    @PostMapping("/{id}")
     @PreAuthorize("hasRole('CANDIDATE')")
     public ResponseEntity<ApplicationResponse> addApplication(
             @AuthenticationPrincipal User user,

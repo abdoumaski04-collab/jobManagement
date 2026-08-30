@@ -4,9 +4,12 @@ package com.abdo.JobManagement.controllers;
 import com.abdo.JobManagement.dto.company.CompanyRequest;
 import com.abdo.JobManagement.dto.company.CompanyResponse;
 import com.abdo.JobManagement.entities.user.Recruiter;
+import com.abdo.JobManagement.entities.user.User;
 import com.abdo.JobManagement.services.CompanyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,8 +23,13 @@ public class CompanyController {
 
     private final CompanyService companyservice;
 
+    @GetMapping()
+    @PreAuthorize("hasAnyRole('RECRUITER','ADMIN')")
+    public ResponseEntity<Page<CompanyResponse>> getAll(User user, Pageable pageable){
+        return ResponseEntity.ok(companyservice.getAll(user,pageable));
+    }
 
-    @GetMapping("/select/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CompanyResponse> getCompany(@PathVariable Long id){
         return ResponseEntity.ok(companyservice.getCompany(id));
     }

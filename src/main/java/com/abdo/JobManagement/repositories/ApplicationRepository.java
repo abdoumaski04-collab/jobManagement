@@ -30,4 +30,8 @@ a.offer.id= :jobofferid
     public Page<application> getapps(@Param("jobofferid") Long jobofferid, @Param("status") applicationstatus status, Pageable pageable);
 
     public boolean existsByCondidatIdAndId(Long candidateId,Long AppId);
+
+    List<application> findByOfferId(Long id);
+
+
 }

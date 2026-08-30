@@ -4,6 +4,7 @@ package com.abdo.JobManagement.controllers;
 import com.abdo.JobManagement.dto.auth.authresponse;
 import com.abdo.JobManagement.dto.auth.loginrequest;
 import com.abdo.JobManagement.dto.auth.registerrequest;
+import com.abdo.JobManagement.entities.user.Admin;
 import com.abdo.JobManagement.entities.user.Condidateprofile;
 import com.abdo.JobManagement.entities.user.Recruiter;
 import com.abdo.JobManagement.entities.user.User;
@@ -39,6 +40,9 @@ public class AuthController {
         User user;
         if(request.getRole() == registerrequest.RegisterRole.RECRUITER){
             user=new Recruiter();
+        }
+        else if(request.getRole() == registerrequest.RegisterRole.ADMIN){
+            user=new Admin();
         }
         else {
 

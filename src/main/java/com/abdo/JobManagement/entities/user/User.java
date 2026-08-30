@@ -1,6 +1,7 @@
 package com.abdo.JobManagement.entities.user;
 
 
+import com.abdo.JobManagement.dto.Admin.UserResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
@@ -73,4 +74,6 @@ public abstract class User implements UserDetails {
     public boolean isEnabled(){
         return enabled;
     }
+
+
 }
