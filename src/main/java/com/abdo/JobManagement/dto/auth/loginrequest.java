@@ -1,22 +1,18 @@
 package com.abdo.JobManagement.dto.auth;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
 
 @Getter
 @Setter
 public class loginrequest {
 
-
-    @Column(nullable = false)
-    @Email
+    @NotBlank(message = "email obligatoire")
+    @Email(message = "email invalide")
     private String email;
 
-    @Column(nullable = false)
+    @NotBlank(message = "mot de passe obligatoire")
     private String password;
-
 }

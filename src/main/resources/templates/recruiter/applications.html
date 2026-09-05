@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Candidatures Reçues')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside th:replace="~{fragments/sidebar :: recruiter('offers')}"></aside>
+
+        <!-- Main Applications Review View -->
+        <main class="dashboard-main">
+            <div class="page-header">
+                <div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 0.25rem;">
+                        Gestion des Candidatures
+                    </div>
+                    <h1 class="page-title" th:text="${offer.title}">Intitulé de l'Offre</h1>
+                    <p class="page-subtitle">
+                        <span th:text="${offer.company.name}">Entreprise</span> &bull; 
+                        <span th:text="${applications != null ? applications.size() : 0}">0</span> candidature(s) enregistrée(s)
+                    </p>
+                </div>
+                <div>
+                    <a th:href="@{/recruiter/offers}" class="btn btn-outline">
+                        <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+                        <span>Retour aux offres</span>
+                    </a>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Empty State -->
+            <div th:if="${applications == null or applications.isEmpty()}" class="card" style="text-align: center; padding: 4rem 2rem;">
+                <div class="brand-icon" style="margin: 0 auto 1.5rem auto; width: 64px; height: 64px; background: var(--bg-alt); color: var(--text-muted);">
+                    <i data-lucide="inbox" style="width: 32px; height: 32px;"></i>
+                </div>
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Aucune candidature pour le moment</h3>
+                <p class="text-secondary" style="max-width: 450px; margin: 0 auto;">Les candidats ayant postulé à cette annonce apparaîtront ici.</p>
+            </div>
+
+            <!-- Applications Cards / Table -->
+            <div th:if="${applications != null and !applications.isEmpty()}" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                <div th:each="app : ${applications}" class="card">
+                    <div class="card-body">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;">
+                            
+                            <!-- Candidate Info -->
+                            <div style="display: flex; gap: 1.25rem; flex: 1; min-width: 280px;">
+                                <div class="user-avatar" style="width: 52px; height: 52px; font-size: 1.35rem; flex-shrink: 0;" th:text="${app.condidat.firstname.substring(0, 1)}">C</div>
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                                        <h3 style="font-size: 1.25rem; color: var(--primary);" th:text="${app.condidat.firstname + ' ' + app.condidat.lastname}">Nom Candidat</h3>
+                                        <span class="badge badge-warning" th:if="${app.status.name() == 'PENDING'}">En attente d'évaluation</span>
+                                        <span class="badge badge-success" th:if="${app.status.name() == 'ACCEPTED'}">Retenu / Accepté</span>
+                                        <span class="badge badge-danger" th:if="${app.status.name() == 'REJECTED'}">Non Retenu / Refusé</span>
+                                        <span class="badge badge-secondary" th:if="${app.status.name() == 'WITHDROWN'}">Candidature Retirée</span>
+                                    </div>
+
+                                    <div style="display: flex; gap: 1.5rem; margin-top: 0.5rem; flex-wrap: wrap;" class="text-sm text-secondary">
+                                        <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                            <i data-lucide="mail" style="width: 14px; height: 14px;"></i>
+                                            <a th:href="'mailto:' + ${app.condidat.email}" th:text="${app.condidat.email}">email@exemple.com</a>
+                                        </span>
+                                        <span th:if="${app.condidat.phone}" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                            <i data-lucide="phone" style="width: 14px; height: 14px;"></i>
+                                            <span th:text="${app.condidat.phone}">+33 6 00 00 00 00</span>
+                                        </span>
+                                        <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                            <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+                                            <span th:text="'Postulé le ' + ${#temporals.format(app.appliedat, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
+                                        </span>
+                                    </div>
+
+                                    <!-- Candidate Bio -->
+                                    <p th:if="${app.condidat.bio}" class="text-sm text-secondary" style="margin-top: 0.75rem; background: var(--bg-alt); padding: 0.75rem 1rem; border-radius: var(--radius-md); line-height: 1.6;" th:text="${app.condidat.bio}">
+                                        Bio du candidat...
+                                    </p>
+
+                                    <!-- Skills -->
+                                    <div style="margin-top: 0.85rem;" th:if="${app.condidat.skills != null and !app.condidat.skills.isEmpty()}">
+                                        <div class="skills-list">
+                                            <span th:each="s : ${app.condidat.skills}" class="skill-tag" th:text="${s.name}">Compétence</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Actions Section -->
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-end; min-width: 180px;">
+                                <!-- View CV Button -->
+                                <a th:if="${app.cvFilename != null}" th:href="@{/files/cv/{filename}(filename=${app.cvFilename})}" target="_blank" class="btn btn-outline-primary btn-sm" style="width: 100%;">
+                                    <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+                                    <span>Consulter le CV (PDF)</span>
+                                </a>
+
+                                <!-- Decision Buttons (if PENDING) -->
+                                <div th:if="${app.status.name() == 'PENDING'}" style="display: flex; gap: 0.5rem; width: 100%;">
+                                    <form th:action="@{/recruiter/applications/{id}/accept(id=${app.id}, offerId=${offer.id})}" method="post" style="flex: 1; margin: 0;">
+                                        <button type="submit" class="btn btn-success btn-sm" style="width: 100%;" title="Accepter la candidature (envoie un email au candidat)">
+                                            <i data-lucide="check" style="width: 14px; height: 14px;"></i>
+                                            <span>Accepter</span>
+                                        </button>
+                                    </form>
+
+                                    <form th:action="@{/recruiter/applications/{id}/refuse(id=${app.id}, offerId=${offer.id})}" method="post" style="flex: 1; margin: 0;" onsubmit="return confirm('Êtes-vous sûr de vouloir refuser cette candidature ?');">
+                                        <button type="submit" class="btn btn-danger btn-sm" style="width: 100%;" title="Refuser la candidature (envoie un email au candidat)">
+                                            <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                                            <span>Refuser</span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

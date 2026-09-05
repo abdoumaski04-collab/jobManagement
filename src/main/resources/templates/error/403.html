@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Accès Refusé (403)')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <main class="main-content" style="display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 160px); padding: 2rem;">
+        <div class="card" style="max-width: 500px; text-align: center; padding: 3rem 2rem;">
+            <div class="brand-icon stat-red" style="margin: 0 auto 1.5rem auto; width: 64px; height: 64px;">
+                <i data-lucide="shield-alert" style="width: 32px; height: 32px;"></i>
+            </div>
+            <h1 style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;">Accès Refusé</h1>
+            <p class="text-secondary" style="margin-bottom: 2rem;">Vous n'avez pas les autorisations nécessaires pour accéder à cette page.</p>
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <a th:href="@{/}" class="btn btn-outline">Accueil</a>
+                <a th:href="@{/dashboard}" class="btn btn-primary">Mon Espace</a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

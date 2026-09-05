@@ -91,8 +91,11 @@ public ApplicationResponse annulerApp(User user,Long appId){
         throw new RessourceNotFoundException("we don't have your application");
 
     application yourapp=apprepo.findById(appId).orElseThrow((()->new RessourceNotFoundException("app not found")));
+    if(yourapp.getStatus() != applicationstatus.PENDING){
+        throw new OperationWontReapeat("cette candidature a déjà été traitée");
+    }
 
-    yourapp.setStatus(applicationstatus.WITHDROWN);
+    yourapp.setStatus(applicationstatus.WITHDRAWN);
     apprepo.save(yourapp);
     ApplicationResponse appr= new ApplicationResponse(yourapp.getId(), userId, yourapp.getOffer().getId(), yourapp.getOffer().getTitle(), yourapp.getAppliedat(), yourapp.getStatus());
     return appr;
@@ -126,6 +129,9 @@ public ApplicationResponse refuseApplication(Long idApp, User user){
     joboffer joboffer=jobofferrepo.findById(app.getOffer().getId()).orElseThrow(()->new RessourceNotFoundException("joboffer not found"));
     if(!joboffer.getCompany().getOwner().getId().equals(user.getId()))
         throw new AccessDeniedException("yu are not the owner of joboffer");
+        if(app.getStatus() != applicationstatus.PENDING){
+            throw new OperationWontReapeat("cette candidature a déjà été traitée");
+        }
 
     app.setStatus(applicationstatus.REJECTED);
     Long condidatId=app.getCondidat().getId();
@@ -144,6 +150,9 @@ public ApplicationResponse acceptApplication(Long idApp,User user){
     joboffer joboffer=jobofferrepo.findById(app.getOffer().getId()).orElseThrow(()->new RessourceNotFoundException("joboffer not found"));
     if(!joboffer.getCompany().getOwner().getId().equals( user.getId()))
         throw new AccessDeniedException("yu are not the owner of joboffer");
+        if(app.getStatus() != applicationstatus.PENDING){
+            throw new OperationWontReapeat("cette candidature a déjà été traitée");
+        }
 
     app.setStatus(applicationstatus.ACCEPTED);
         Long condidatId=app.getCondidat().getId();

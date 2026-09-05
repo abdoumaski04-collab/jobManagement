@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Offres Emploi - Workly')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <!-- Hero Search Section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <h1 class="hero-title">Trouvez le <span>Job Idéal</span> qui vous correspond</h1>
+            <p class="hero-subtitle">Des centaines d'opportunités professionnelles publiées par les meilleures entreprises.</p>
+
+            <!-- Search Form -->
+            <form th:action="@{/jobs}" method="get" class="search-card">
+                <div class="search-input-group">
+                    <i data-lucide="search" style="width: 18px; height: 18px; color: var(--text-muted);"></i>
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="Titre du poste, mot-clé...">
+                </div>
+
+                <div class="search-input-group">
+                    <i data-lucide="map-pin" style="width: 18px; height: 18px; color: var(--text-muted);"></i>
+                    <input type="text" name="location" th:value="${location}" placeholder="Ville ou région...">
+                </div>
+
+                <div class="search-input-group" th:if="${companies != null and !companies.isEmpty()}">
+                    <i data-lucide="building" style="width: 18px; height: 18px; color: var(--text-muted);"></i>
+                    <select name="companyId">
+                        <option value="">Toutes les entreprises</option>
+                        <option th:each="c : ${companies}" 
+                                th:value="${c.id}" 
+                                th:text="${c.name}"
+                                th:selected="${companyId != null and companyId == c.id}"></option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">
+                    <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                    <span>Rechercher</span>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content" style="padding: 3.5rem 0;">
+        <div class="container">
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 1.5rem; color: var(--primary);">Offres Disponibles</h2>
+                    <p class="text-sm" th:text="${totalElements != null ? totalElements + ' opportunité(s) trouvée(s)' : 'Découvrez nos opportunités'}"></p>
+                </div>
+                <div th:if="${keyword != null or location != null or companyId != null}">
+                    <a th:href="@{/jobs}" class="btn btn-outline btn-sm">
+                        <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                        <span>Réinitialiser les filtres</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${offers == null or offers.isEmpty()}" class="card" style="text-align: center; padding: 4rem 2rem;">
+                <div class="brand-icon" style="margin: 0 auto 1.5rem auto; width: 64px; height: 64px; background: var(--bg-alt); color: var(--text-muted);">
+                    <i data-lucide="search-x" style="width: 32px; height: 32px;"></i>
+                </div>
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Aucune offre correspondante trouvée</h3>
+                <p class="text-secondary" style="max-width: 450px; margin: 0 auto 1.5rem auto;">Essayez d'élargir vos critères de recherche ou réinitialisez les filtres pour voir toutes les annonces.</p>
+                <a th:href="@{/jobs}" class="btn btn-primary">Voir toutes les offres</a>
+            </div>
+
+            <!-- Offers Grid -->
+            <div th:if="${offers != null and !offers.isEmpty()}" class="job-grid">
+                <div th:each="offer : ${offers}" class="job-card">
+                    <div>
+                        <div class="job-card-header">
+                            <div class="company-logo-fallback" th:text="${offer.company != null and offer.company.name != null ? offer.company.name.substring(0, 1).toUpperCase() : 'E'}">E</div>
+                            <div>
+                                <h3 class="job-title" th:text="${offer.title}">Titre du poste</h3>
+                                <div class="company-name" th:text="${offer.company != null ? offer.company.name : ''}">Nom de l'entreprise</div>
+                            </div>
+                        </div>
+
+                        <div class="job-meta">
+                            <span class="job-meta-item">
+                                <i data-lucide="map-pin" style="width: 14px; height: 14px;"></i>
+                                <span th:text="${offer.location}">Paris, France</span>
+                            </span>
+                            <span class="job-salary" th:if="${offer.salaryrange}" th:text="${offer.salaryrange}">45k - 55k €</span>
+                            <span class="badge badge-success" th:if="${offer.status.name() == 'OPEN'}">Ouverte</span>
+                            <span class="badge badge-danger" th:if="${offer.status.name() == 'CLOSED'}">Fermée</span>
+                        </div>
+
+                        <p class="text-sm text-secondary" style="margin: 1rem 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;" th:text="${offer.description}">
+                            Description sommaire de l'offre d'emploi.
+                        </p>
+                    </div>
+
+                    <div style="padding-top: 1rem; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                        <span class="text-xs text-muted" th:text="${offer.createdat != null ? #temporals.format(offer.createdat, 'dd/MM/yyyy') : 'Récemment'}">01/01/2026</span>
+                        <a th:href="@{/jobs/{id}(id=${offer.id})}" class="btn btn-outline-primary btn-sm">
+                            <span>Voir le détail</span>
+                            <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${totalPages != null and totalPages > 1}" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 3rem;">
+                <a th:if="${currentPage > 0}" 
+                   th:href="@{/jobs(page=${currentPage - 1}, keyword=${keyword}, location=${location}, companyId=${companyId})}" 
+                   class="btn btn-outline btn-sm">Précédent</a>
+                
+                <span class="btn btn-primary btn-sm" th:text="${currentPage + 1} + ' / ' + ${totalPages}">1 / 5</span>
+
+                <a th:if="${currentPage + 1 < totalPages}" 
+                   th:href="@{/jobs(page=${currentPage + 1}, keyword=${keyword}, location=${location}, companyId=${companyId})}" 
+                   class="btn btn-outline btn-sm">Suivant</a>
+            </div>
+
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

@@ -5,6 +5,7 @@ import com.abdo.JobManagement.entities.user.Recruiter;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.File;
 import java.time.LocalDateTime;
 
 @Table(name = "application",
@@ -27,7 +28,7 @@ public class application {
     private Condidateprofile condidat;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name= "joboffer_id",nullable = false)
+    @JoinColumn(name= "joboffer_id",nullable = true)
     private joboffer offer;
 
     @Enumerated(EnumType.STRING)
@@ -50,5 +51,12 @@ public class application {
     // càd on a pris une decision et la reponse sur application reçu
     public boolean iffinal(){
         return status != applicationstatus.PENDING;
+    }
+
+    @Transient
+    public String getCvFilename() {
+        return cvsnapshoturl == null || cvsnapshoturl.isBlank()
+                ? null
+                : new File(cvsnapshoturl).getName();
     }
 }

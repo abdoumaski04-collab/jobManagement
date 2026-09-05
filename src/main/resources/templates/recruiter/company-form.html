@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${company.id != null ? 'Modifier Entreprise' : 'Nouvelle Entreprise'})}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: navbar}"></header>
+
+<div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: recruiter('companies')}"></aside>
+
+    <!-- Main Form -->
+    <main class="dashboard-main">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title" th:text="${company.id != null ? 'Modifier cette Entreprise' : 'Nouvelle Entreprise'}">Entreprise</h1>
+                <p class="page-subtitle">Renseignez les détails de la structure pour publier des offres d'emploi.</p>
+            </div>
+            <div>
+                <a th:href="@{/recruiter/companies}" class="btn btn-outline">
+                    <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+                    <span>Retour aux entreprises</span>
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="card" style="max-width: 650px;">
+            <div class="card-body" style="padding: 2.5rem;">
+                <form th:action="@{/recruiter/companies/save}" method="post">
+                    <!-- FIX : n'envoyer le champ id QUE s'il existe -->
+                    <input type="hidden" name="id" th:if="${company.id != null}" th:value="${company.id}">
+
+                    <div class="form-group">
+                        <label class="form-label" for="name">Nom de l'Entreprise</label>
+                        <input type="text" id="name" name="name" class="form-control" th:value="${company.name}" placeholder="Ex: TechCorp Solutions" required maxlength="100">
+                        <div class="form-help">Maximum 100 caractères.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="website">Site Web (URL)</label>
+                        <input type="text" id="website" name="website" class="form-control" th:value="${company.website}" placeholder="https://www.techcorp.com" required maxlength="255">
+                        <div class="form-help">Maximum 255 caractères.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="description">Description de l'Entreprise</label>
+                        <textarea id="description" name="description" class="form-control" rows="5" placeholder="Décrivez les activités, l'équipe et les valeurs de l'entreprise..." required maxlength="255" th:text="${company.description}"></textarea>
+                        <div class="form-help">Maximum 255 caractères.</div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn btn-primary">
+                            <i data-lucide="check" style="width: 18px; height: 18px;"></i>
+                            <span th:text="${company.id != null ? 'Mettre à jour' : 'Enregistrer'}">Enregistrer</span>
+                        </button>
+                        <a th:href="@{/recruiter/companies}" class="btn btn-outline">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

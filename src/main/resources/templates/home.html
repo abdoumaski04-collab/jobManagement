@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Accueil - Propulsez votre carrière avec Workly')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <!-- Hero Section -->
+    <section class="landing-hero">
+        <div class="container">
+            <div class="landing-hero-grid">
+                
+                <!-- Left: Text Presentation -->
+                <div class="landing-hero-content">
+
+
+                    <h1 class="landing-hero-title">
+                        Connectez vos talents aux opportunités qui comptent avec <span class="gradient-text">Workly</span>
+                    </h1>
+
+                    <p class="landing-hero-desc">
+                        <strong>Workly</strong> est l'écosystème innovant qui réinvente la rencontre entre les professionnels ambitieux et les entreprises visionnaires. Déposez votre CV, explorez des centaines d'offres qualifiées ou pilotez vos campagnes de recrutement en toute simplicité.
+                    </p>
+
+                    <div class="landing-hero-actions">
+                        <a th:href="@{/jobs}" class="btn btn-primary btn-lg">
+                            <i data-lucide="search" style="width: 20px; height: 20px;"></i>
+                            <span>Explorer les Offres</span>
+                        </a>
+                        <div sec:authorize="isAnonymous()">
+                            <a th:href="@{/register}" class="btn btn-outline btn-lg" style="background: rgba(255, 255, 255, 0.05); color: white; border-color: rgba(255, 255, 255, 0.2);">
+                                <i data-lucide="user-plus" style="width: 20px; height: 20px;"></i>
+                                <span>Créer un compte</span>
+                            </a>
+                        </div>
+                        <div sec:authorize="hasRole('RECRUITER')">
+                            <a th:href="@{/recruiter/offers/new}" class="btn btn-success btn-lg">
+                                <i data-lucide="plus-circle" style="width: 20px; height: 20px;"></i>
+                                <span>Publier une Offre</span>
+                            </a>
+                        </div>
+                        <div sec:authorize="hasAnyRole('CONDIDATE', 'CANDIDATE')">
+                            <a th:href="@{/candidate/dashboard}" class="btn btn-outline btn-lg" style="background: rgba(255, 255, 255, 0.05); color: white; border-color: rgba(255, 255, 255, 0.2);">
+                                <i data-lucide="layout-dashboard" style="width: 20px; height: 20px;"></i>
+                                <span>Mon Espace Candidat</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick stats pills -->
+                    <div class="landing-quick-stats">
+                        <div class="quick-stat-item">
+                            <strong th:text="${totalOffers != null ? totalOffers : '150+'}">150+</strong>
+                            <span>Offres publiées</span>
+                        </div>
+                        <div class="quick-stat-divider"></div>
+                        <div class="quick-stat-item">
+                            <strong th:text="${totalCompanies != null ? totalCompanies : '50+'}">50+</strong>
+                            <span>Entreprises partenaires</span>
+                        </div>
+                        <div class="quick-stat-divider"></div>
+                        <div class="quick-stat-item">
+                            <strong>100%</strong>
+                            <span>Candidatures sécurisées</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Significant Visual / Image -->
+                <div class="landing-hero-image-wrapper">
+                    <div class="landing-image-card">
+                        <img th:src="@{/images/hero-workly.jpg}" alt="Workly - Plateforme de Recrutement et Gestion de Carrières" class="landing-hero-img">
+                        <div class="landing-image-overlay-badge">
+                            <div class="badge-icon-box">
+                                <i data-lucide="trending-up" style="width: 20px; height: 20px; color: var(--success);"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">+94% de match</div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted);">Recrutements accélérés</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Values & Features Section -->
+    <section class="landing-features-section">
+        <div class="container">
+            <div class="section-header-center">
+                <span class="section-tag">Pourquoi choisir Workly</span>
+                <h2 class="section-title">Une solution complète pour chaque étape du recrutement</h2>
+                <p class="section-subtitle">Conçue pour offrir une expérience fluide, rapide et performante aux candidats comme aux recruteurs.</p>
+            </div>
+
+            <div class="features-grid">
+                
+                <!-- Feature 1: Candidats -->
+                <div class="feature-card">
+                    <div class="feature-icon-box" style="background: rgba(59, 130, 246, 0.1); color: var(--accent);">
+                        <i data-lucide="user-check" style="width: 28px; height: 28px;"></i>
+                    </div>
+                    <h3 class="feature-title">Espace Candidat Intelligent</h3>
+                    <p class="feature-desc">
+                        Créez votre profil en quelques clics, déposez votre CV au format PDF, renseignez vos compétences clés et postulez instantanément aux offres sans ressaisie fastidieuse.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i data-lucide="check" style="width: 16px; height: 16px; color: var(--success);"></i> Postulez en 1 clic avec votre CV</li>
+                        <li><i data-lucide="check" style="width: 16px; height: 16px; color: var(--success);"></i> Suivi de candidature en temps réel</li>
+                        <li><i data-lucide="check" style="width: 16px; height: 16px; color: var(--success);"></i> Gestion de compétences personnalisée</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 2: Recruteurs -->
+                <div class="feature-card">
+                    <div class="feature-icon-box" style="background: rgba(5, 150, 105, 0.1); color: var(--success);">
+                        <i data-lucide="briefcase" style="width: 28px; height: 28px;"></i>
+                    </div>
+                    <h3 class="feature-title">Gestion RH & Recruteurs</h3>
+                    <p class="feature-desc">
+                        Publiez vos opportunités sous vos différentes entités d'entreprise, gérez la visibilité de vos annonces et évaluez chaque candidature avec consultation immédiate du CV.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i data-lucide="check" style="width: 16px; height: 16px; color: var(--success);"></i> Multi-entreprises par recruteur</li>
+                        <li><i data-lucide="check" style="width: 16px; height: 16px; color: var(--success);"></i> Revue & validation des profils</li>
+                        <li><i data-lucide="check" style="width: 16px; height: 16px; color: var(--success);"></i> Notifications par email & suivi simplifié</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 3: Modération & Sécurité -->
+                <div class="feature-card">
+                    <div class="feature-icon-box" style="background: rgba(217, 119, 6, 0.1); color: var(--alert);">
+                        <i data-lucide="shield-check" style="width: 28px; height: 28px;"></i>
+                    </div>
+                    <h3 class="feature-title">Sécurité & Supervision Admin</h3>
+                    <p class="feature-desc">
+                        Une administration dédiée pour superviser l'ensemble de la plateforme, activer ou modérer les utilisateurs et garantir des annonces fiables et de haute qualité.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i data-lucide="check" style="width: 16px; height: 16px; color: var(--success);"></i> Double sécurité (JWT & Sessions)</li>
+                        <li><i data-lucide="check" style="width: 16px; height: 16px; color: var(--success);"></i> Modération globale des offres</li>
+                        <li><i data-lucide="check" style="width: 16px; height: 16px; color: var(--success);"></i> Protection des données candidats</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Job Offers Preview Section -->
+    <section class="landing-recent-jobs" th:if="${recentOffers != null and !recentOffers.isEmpty()}">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <span class="section-tag">Dernières Opportunités</span>
+                    <h2 class="section-title" style="margin-bottom: 0.25rem;">Offres d'Emploi à la Une</h2>
+                    <p class="section-subtitle">Découvrez les postes récemment ouverts sur Workly.</p>
+                </div>
+                <div>
+                    <a th:href="@{/jobs}" class="btn btn-outline-primary">
+                        <span>Voir toutes les offres</span>
+                        <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="job-grid">
+                <div th:each="offer : ${recentOffers}" class="job-card">
+                    <div>
+                        <div class="job-card-header">
+                            <div class="company-logo-fallback" th:text="${offer.company != null and offer.company.name != null ? offer.company.name.substring(0, 1).toUpperCase() : 'W'}">W</div>
+                            <div>
+                                <h3 class="job-title" th:text="${offer.title}">Titre du poste</h3>
+                                <div class="company-name" th:text="${offer.company != null ? offer.company.name : 'Entreprise'}">Entreprise</div>
+                            </div>
+                        </div>
+
+                        <div class="job-meta">
+                            <span class="job-meta-item">
+                                <i data-lucide="map-pin" style="width: 14px; height: 14px;"></i>
+                                <span th:text="${offer.location}">Paris</span>
+                            </span>
+                            <span class="job-salary" th:if="${offer.salaryrange}" th:text="${offer.salaryrange}">Salaire</span>
+                            <span class="badge badge-success" th:if="${offer.status.name() == 'OPEN'}">Ouverte</span>
+                        </div>
+
+                        <p class="text-sm text-secondary" style="margin: 1rem 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;" th:text="${offer.description}">
+                            Description du poste...
+                        </p>
+                    </div>
+
+                    <div style="padding-top: 1rem; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                        <span class="text-xs text-muted" th:text="${offer.createdat != null ? #temporals.format(offer.createdat, 'dd/MM/yyyy') : 'Récent'}">01/01/2026</span>
+                        <a th:href="@{/jobs/{id}(id=${offer.id})}" class="btn btn-outline-primary btn-sm">
+                            <span>Voir l'offre</span>
+                            <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="landing-cta-section">
+        <div class="container">
+            <div class="cta-banner-card">
+                <div class="cta-content">
+                    <h2 class="cta-title">Prêt à donner une nouvelle dimension à votre parcours ?</h2>
+                    <p class="cta-desc">Rejoignez des milliers de professionnels et d'entreprises qui font confiance à Workly pour leurs projets de recrutement.</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
+                        <a th:href="@{/register}" class="btn btn-primary btn-lg" style="background: #FFFFFF; color: var(--primary);">
+                            <i data-lucide="user-plus" style="width: 18px; height: 18px;"></i>
+                            <span>Créer un compte gratuit</span>
+                        </a>
+                        <a th:href="@{/jobs}" class="btn btn-outline btn-lg" style="color: white; border-color: rgba(255, 255, 255, 0.4);">
+                            <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                            <span>Parcourir les postes</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

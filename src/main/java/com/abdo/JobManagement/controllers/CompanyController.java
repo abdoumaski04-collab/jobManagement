@@ -25,7 +25,7 @@ public class CompanyController {
 
     @GetMapping()
     @PreAuthorize("hasAnyRole('RECRUITER','ADMIN')")
-    public ResponseEntity<Page<CompanyResponse>> getAll(User user, Pageable pageable){
+    public ResponseEntity<Page<CompanyResponse>> getAll(@AuthenticationPrincipal User user, Pageable pageable){
         return ResponseEntity.ok(companyservice.getAll(user,pageable));
     }
 

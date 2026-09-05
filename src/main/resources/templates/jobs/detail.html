@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${offer.title})}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <main class="main-content" style="padding: 3rem 0;">
+        <div class="container">
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <a th:href="@{/jobs}" class="btn btn-outline btn-sm">
+                    <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+                    <span>Retour aux offres</span>
+                </a>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start;">
+                
+                <!-- Main Job Details -->
+                <div class="card">
+                    <div class="card-body" style="padding: 2.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
+                            <div>
+                                <span class="badge badge-success" th:if="${offer.status.name() == 'OPEN'}" style="margin-bottom: 0.5rem;">Offre Ouverte</span>
+                                <span class="badge badge-danger" th:if="${offer.status.name() == 'CLOSED'}" style="margin-bottom: 0.5rem;">Offre Fermée</span>
+                                <h1 style="font-size: 2rem; color: var(--primary); margin-top: 0.25rem;" th:text="${offer.title}">Titre du Poste</h1>
+                                <div style="font-size: 1.1rem; color: var(--text-secondary); margin-top: 0.35rem;" th:text="${company != null ? company.name : (offer.company != null ? offer.company.name : 'Entreprise')}">Entreprise SAS</div>
+                            </div>
+
+                            <div th:if="${offer.salaryrange}" class="job-salary" style="font-size: 1.1rem; padding: 0.5rem 1rem;" th:text="${offer.salaryrange}">
+                                50 000 € - 65 000 €
+                            </div>
+                        </div>
+
+                        <div class="job-meta" style="margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-light);">
+                            <span class="job-meta-item">
+                                <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i>
+                                <span th:text="${offer.location}">Paris, France</span>
+                            </span>
+                            <span class="job-meta-item">
+                                <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
+                                <span th:text="'Publiée le ' + ${#temporals.format(offer.createdat, 'dd MMMM yyyy')}">Publiée le 01/01/2026</span>
+                            </span>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 1rem;">Description du Poste</h3>
+                            <div style="color: var(--text-secondary); line-height: 1.8; white-space: pre-line;" th:text="${offer.description}">
+                                Contenu détaillé de la description de l'offre d'emploi...
+                            </div>
+                        </div>
+
+                        <!-- Apply Section -->
+                        <div style="padding-top: 2rem; border-top: 1px solid var(--border-light);">
+                            
+                            <!-- If User is Candidate -->
+                            <div sec:authorize="hasAnyRole('CONDIDATE', 'CANDIDATE')">
+                                <div th:if="${alreadyApplied}">
+                                    <div class="alert alert-success" style="margin-bottom: 0;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <i data-lucide="check-circle-2" style="width: 20px; height: 20px;"></i>
+                                            <span>Vous avez déjà soumis votre candidature pour cette offre.</span>
+                                        </div>
+                                        <a th:href="@{/candidate/applications}" class="btn btn-sm btn-outline-primary" style="background: white;">Suivre ma candidature</a>
+                                    </div>
+                                </div>
+
+                                <div th:if="${!alreadyApplied}">
+                                    <div th:if="${offer.status.name() == 'OPEN'}">
+                                        <div th:if="${hasCv}">
+                                            <form th:action="@{/candidate/applications/{id}/apply(id=${offer.id})}" method="post">
+                                                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                                                    <i data-lucide="send" style="width: 20px; height: 20px;"></i>
+                                                    <span>Postuler avec mon CV enregistré</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div th:if="${!hasCv}" class="alert alert-warning" style="margin-bottom: 0;">
+                                            <div>
+                                                <strong>CV Manquant :</strong> Veuillez téléverser votre CV dans votre profil avant de postuler.
+                                            </div>
+                                            <a th:href="@{/candidate/profile}" class="btn btn-sm btn-primary">Ajouter mon CV</a>
+                                        </div>
+                                    </div>
+                                    <div th:if="${offer.status.name() == 'CLOSED'}" class="alert alert-danger" style="margin-bottom: 0;">
+                                        Cette offre d'emploi est actuellement fermée aux candidatures.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- If User is Not Logged In -->
+                            <div sec:authorize="isAnonymous()">
+                                <div class="card" style="background-color: var(--bg-alt); padding: 1.5rem; text-align: center;">
+                                    <h4 style="margin-bottom: 0.5rem;">Intéressé par ce poste ?</h4>
+                                    <p class="text-sm text-secondary" style="margin-bottom: 1rem;">Connectez-vous ou créez un compte candidat pour postuler en 1 clic.</p>
+                                    <div style="display: flex; justify-content: center; gap: 1rem;">
+                                        <a th:href="@{/login}" class="btn btn-outline">Se connecter</a>
+                                        <a th:href="@{/register}" class="btn btn-primary">Créer un compte</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- If Recruiter or Admin -->
+                            <div sec:authorize="hasAnyRole('RECRUITER', 'ADMIN')">
+                                <div class="text-sm text-muted">
+                                    <em>Vous êtes connecté en tant que recruteur ou administrateur.</em>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company Sidebar Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 style="font-size: 1.1rem; color: var(--primary);">À propos de l'entreprise</h4>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+                            <div class="company-logo-fallback" style="width: 56px; height: 56px; font-size: 1.5rem;" th:text="${company.name != null ? company.name.substring(0, 1).toUpperCase() : 'E'}">E</div>
+                            <div>
+                                <h3 style="font-size: 1.15rem; color: var(--primary);" th:text="${company.name}">Nom Entreprise</h3>
+                                <a th:if="${company.website}" th:href="${company.website.startsWith('http') ? company.website : 'https://' + company.website}" target="_blank" class="text-xs" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <span th:text="${company.website}">www.site.com</span>
+                                    <i data-lucide="external-link" style="width: 12px; height: 12px;"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <p class="text-sm text-secondary" style="margin-bottom: 1.5rem; line-height: 1.6;" th:text="${company.description}">
+                            Description de l'entreprise et de son secteur d'activité.
+                        </p>
+
+                        <div style="border-top: 1px solid var(--border-light); padding-top: 1rem;">
+                            <a th:href="@{/jobs(companyId=${company.id})}" class="btn btn-outline btn-sm" style="width: 100%;">
+                                <i data-lucide="briefcase" style="width: 14px; height: 14px;"></i>
+                                <span>Voir toutes les offres de l'entreprise</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

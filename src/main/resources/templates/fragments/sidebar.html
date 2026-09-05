@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!-- Candidate Sidebar -->
+    <aside th:fragment="candidate(activeTab)" class="sidebar">
+        <div class="sidebar-brand-meta">
+            <div style="font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Espace Candidat</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #FFFFFF; margin-top: 0.25rem;">Tableau de Bord</div>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li>
+                <a th:href="@{/candidate/dashboard}" class="sidebar-link" th:classappend="${activeTab == 'dashboard' ? 'active' : ''}">
+                    <span class="sidebar-icon"><i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i></span>
+                    <span>Vue d'ensemble</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/candidate/profile}" class="sidebar-link" th:classappend="${activeTab == 'profile' ? 'active' : ''}">
+                    <span class="sidebar-icon"><i data-lucide="user-check" style="width: 18px; height: 18px;"></i></span>
+                    <span>Mon Profil & CV</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/candidate/applications}" class="sidebar-link" th:classappend="${activeTab == 'applications' ? 'active' : ''}">
+                    <span class="sidebar-icon"><i data-lucide="send" style="width: 18px; height: 18px;"></i></span>
+                    <span>Mes Candidatures</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/jobs}" class="sidebar-link">
+                    <span class="sidebar-icon"><i data-lucide="search" style="width: 18px; height: 18px;"></i></span>
+                    <span>Chercher un Job</span>
+                </a>
+            </li>
+        </ul>
+
+        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="sidebar-link" style="width: 100%; background: none; border: none; cursor: pointer; text-align: left;">
+                    <span class="sidebar-icon"><i data-lucide="log-out" style="width: 18px; height: 18px;"></i></span>
+                    <span>Déconnexion</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Recruiter Sidebar -->
+    <aside th:fragment="recruiter(activeTab)" class="sidebar">
+        <div class="sidebar-brand-meta">
+            <div style="font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Espace Recruteur</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #FFFFFF; margin-top: 0.25rem;">Gestion RH</div>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li>
+                <a th:href="@{/recruiter/dashboard}" class="sidebar-link" th:classappend="${activeTab == 'dashboard' ? 'active' : ''}">
+                    <span class="sidebar-icon"><i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i></span>
+                    <span>Tableau de Bord</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/recruiter/companies}" class="sidebar-link" th:classappend="${activeTab == 'companies' ? 'active' : ''}">
+                    <span class="sidebar-icon"><i data-lucide="building-2" style="width: 18px; height: 18px;"></i></span>
+                    <span>Mes Entreprises</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/recruiter/offers}" class="sidebar-link" th:classappend="${activeTab == 'offers' ? 'active' : ''}">
+                    <span class="sidebar-icon"><i data-lucide="file-text" style="width: 18px; height: 18px;"></i></span>
+                    <span>Mes Offres d'Emploi</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/recruiter/offers/new}" class="sidebar-link" th:classappend="${activeTab == 'new-offer' ? 'active' : ''}">
+                    <span class="sidebar-icon"><i data-lucide="plus-circle" style="width: 18px; height: 18px;"></i></span>
+                    <span>Publier une Offre</span>
+                </a>
+            </li>
+        </ul>
+
+        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="sidebar-link" style="width: 100%; background: none; border: none; cursor: pointer; text-align: left;">
+                    <span class="sidebar-icon"><i data-lucide="log-out" style="width: 18px; height: 18px;"></i></span>
+                    <span>Déconnexion</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Admin Sidebar -->
+    <aside th:fragment="admin(activeTab)" class="sidebar">
+        <div class="sidebar-brand-meta">
+            <div style="font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Panneau Admin</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #FFFFFF; margin-top: 0.25rem;">Supervision</div>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li>
+                <a th:href="@{/admin/dashboard}" class="sidebar-link" th:classappend="${activeTab == 'dashboard' ? 'active' : ''}">
+                    <span class="sidebar-icon"><i data-lucide="shield-check" style="width: 18px; height: 18px;"></i></span>
+                    <span>Statistiques Globales</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/users}" class="sidebar-link" th:classappend="${activeTab == 'users' ? 'active' : ''}">
+                    <span class="sidebar-icon"><i data-lucide="users" style="width: 18px; height: 18px;"></i></span>
+                    <span>Utilisateurs & Accès</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/companies}" class="sidebar-link" th:classappend="${activeTab == 'companies' ? 'active' : ''}">
+                    <span class="sidebar-icon"><i data-lucide="building" style="width: 18px; height: 18px;"></i></span>
+                    <span>Toutes les Entreprises</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/admin/offers}" class="sidebar-link" th:classappend="${activeTab == 'offers' ? 'active' : ''}">
+                    <span class="sidebar-icon"><i data-lucide="layers" style="width: 18px; height: 18px;"></i></span>
+                    <span>Toutes les Offres</span>
+                </a>
+            </li>
+        </ul>
+
+        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="sidebar-link" style="width: 100%; background: none; border: none; cursor: pointer; text-align: left;">
+                    <span class="sidebar-icon"><i data-lucide="log-out" style="width: 18px; height: 18px;"></i></span>
+                    <span>Déconnexion</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+</body>
+</html>

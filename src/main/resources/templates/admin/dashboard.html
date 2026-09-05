@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Administration - Dashboard')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside th:replace="~{fragments/sidebar :: admin('dashboard')}"></aside>
+
+        <!-- Main Dashboard View -->
+        <main class="dashboard-main">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Supervision de la Plateforme</h1>
+                    <p class="page-subtitle">Statistiques globales, gestion des comptes et modération du contenu.</p>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Global Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Utilisateurs Inscrits</div>
+                        <div class="stat-value" th:text="${totalUsers}">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper stat-blue">
+                        <i data-lucide="users" style="width: 24px; height: 24px;"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Candidats</div>
+                        <div class="stat-value" th:text="${totalCandidates}">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper stat-green">
+                        <i data-lucide="user-check" style="width: 24px; height: 24px;"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Recruteurs</div>
+                        <div class="stat-value" th:text="${totalRecruiters}">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper stat-amber">
+                        <i data-lucide="briefcase" style="width: 24px; height: 24px;"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Entreprises</div>
+                        <div class="stat-value" th:text="${totalCompanies}">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper stat-slate">
+                        <i data-lucide="building" style="width: 24px; height: 24px;"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Offres Publiées</div>
+                        <div class="stat-value" th:text="${totalOffers}">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper stat-blue">
+                        <i data-lucide="file-text" style="width: 24px; height: 24px;"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Candidatures Totales</div>
+                        <div class="stat-value" th:text="${totalApplications}">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper stat-green">
+                        <i data-lucide="send" style="width: 24px; height: 24px;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Management Navigation Cards -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                
+                <div class="card card-hover">
+                    <div class="card-body">
+                        <div class="stat-icon-wrapper stat-blue" style="margin-bottom: 1rem;">
+                            <i data-lucide="users" style="width: 24px; height: 24px;"></i>
+                        </div>
+                        <h3 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 0.5rem;">Gestion des Utilisateurs</h3>
+                        <p class="text-sm text-secondary" style="margin-bottom: 1.25rem;">Visualisez, activez, désactivez ou supprimez des comptes candidats et recruteurs.</p>
+                        <a th:href="@{/admin/users}" class="btn btn-outline-primary btn-sm">Accéder aux utilisateurs &rarr;</a>
+                    </div>
+                </div>
+
+                <div class="card card-hover">
+                    <div class="card-body">
+                        <div class="stat-icon-wrapper stat-amber" style="margin-bottom: 1rem;">
+                            <i data-lucide="building" style="width: 24px; height: 24px;"></i>
+                        </div>
+                        <h3 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 0.5rem;">Gestion des Entreprises</h3>
+                        <p class="text-sm text-secondary" style="margin-bottom: 1.25rem;">Supervisez toutes les structures professionnelles enregistrées sur la plateforme.</p>
+                        <a th:href="@{/admin/companies}" class="btn btn-outline-primary btn-sm">Accéder aux entreprises &rarr;</a>
+                    </div>
+                </div>
+
+                <div class="card card-hover">
+                    <div class="card-body">
+                        <div class="stat-icon-wrapper stat-slate" style="margin-bottom: 1rem;">
+                            <i data-lucide="layers" style="width: 24px; height: 24px;"></i>
+                        </div>
+                        <h3 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 0.5rem;">Modération des Offres</h3>
+                        <p class="text-sm text-secondary" style="margin-bottom: 1.25rem;">Consultez et supprimez les offres non conformes ou obsolètes.</p>
+                        <a th:href="@{/admin/offers}" class="btn btn-outline-primary btn-sm">Accéder aux offres &rarr;</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

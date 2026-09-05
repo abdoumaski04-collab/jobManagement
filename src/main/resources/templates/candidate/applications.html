@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Espace Candidat - Mes Candidatures')}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: navbar}"></header>
+
+<div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: candidate('applications')}"></aside>
+
+    <!-- Main Applications View -->
+    <main class="dashboard-main">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Mes Candidatures</h1>
+                <p class="page-subtitle">Suivez l'état d'avancement de vos candidatures soumises aux recruteurs.</p>
+            </div>
+            <div>
+                <a th:href="@{/jobs}" class="btn btn-primary">
+                    <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                    <span>Explorer d'autres offres</span>
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <!-- Empty State -->
+        <div th:if="${applications == null or applications.isEmpty()}" class="card" style="text-align: center; padding: 4rem 2rem;">
+            <div class="brand-icon" style="margin: 0 auto 1.5rem auto; width: 64px; height: 64px; background: var(--bg-alt); color: var(--text-muted);">
+                <i data-lucide="inbox" style="width: 32px; height: 32px;"></i>
+            </div>
+            <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Vous n'avez pas encore postulé</h3>
+            <p class="text-secondary" style="max-width: 450px; margin: 0 auto 1.5rem auto;">Consultez nos offres d'emploi disponibles et soumettez votre CV en un clic.</p>
+            <a th:href="@{/jobs}" class="btn btn-primary">Découvrir les offres</a>
+        </div>
+
+        <!-- Applications Table -->
+        <div th:if="${applications != null and !applications.isEmpty()}" class="card">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Offre d'Emploi</th>
+                        <th>Entreprise</th>
+                        <th>Localisation</th>
+                        <th>Date de Candidature</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="app : ${applications}">
+                        <td>
+                            <strong th:if="${app.offer != null}" style="color: var(--primary);" th:text="${app.offer.title}">Titre du poste</strong>
+                            <strong th:unless="${app.offer != null}" class="text-muted"><em>Offre supprimée</em></strong>
+                        </td>
+                        <td>
+                            <span th:if="${app.offer != null}" th:text="${app.offer.company.name}">Entreprise SAS</span>
+                            <span th:unless="${app.offer != null}" class="text-muted">—</span>
+                        </td>
+                        <td>
+                            <span th:if="${app.offer != null}" class="text-sm text-secondary" th:text="${app.offer.location}">Paris</span>
+                            <span th:unless="${app.offer != null}" class="text-sm text-muted">—</span>
+                        </td>
+                        <td class="text-sm text-secondary" th:text="${#temporals.format(app.appliedat, 'dd/MM/yyyy HH:mm')}">
+                            01/01/2026 14:30
+                        </td>
+                        <td>
+                            <span class="badge badge-warning" th:if="${app.status.name() == 'PENDING'}">En attente</span>
+                            <span class="badge badge-success" th:if="${app.status.name() == 'ACCEPTED'}">Acceptée 🎉</span>
+                            <span class="badge badge-danger" th:if="${app.status.name() == 'REJECTED'}">Non retenue</span>
+                            <span class="badge badge-secondary" th:if="${app.status.name() == 'WITHDRAWN'}">Annulée</span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <a th:if="${app.offer != null}" th:href="@{/jobs/{id}(id=${app.offer.id})}" class="btn btn-outline btn-sm" title="Voir l'offre">
+                                    <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+                                </a>
+
+                                <!-- Cancel / Withdraw button if pending -->
+                                <form th:if="${app.status.name() == 'PENDING'}" th:action="@{/candidate/applications/{id}/cancel(id=${app.id})}" method="post" style="margin: 0;" onsubmit="return confirm('Êtes-vous sûr de vouloir retirer cette candidature ?');">
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Annuler ma candidature">
+                                        <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                                        <span>Retirer</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

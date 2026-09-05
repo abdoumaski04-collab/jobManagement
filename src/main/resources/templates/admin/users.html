@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Administration - Utilisateurs')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside th:replace="~{fragments/sidebar :: admin('users')}"></aside>
+
+        <!-- Main Users View -->
+        <main class="dashboard-main">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Gestion des Utilisateurs</h1>
+                    <p class="page-subtitle">Modérez les comptes, activez ou suspendez les accès aux services.</p>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Role Filter Tabs -->
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                <a th:href="@{/admin/users(role='ALL')}" class="btn btn-sm" th:classappend="${selectedRole == 'ALL' ? 'btn-primary' : 'btn-outline'}">Tous</a>
+                <a th:href="@{/admin/users(role='CONDIDATE')}" class="btn btn-sm" th:classappend="${selectedRole == 'CONDIDATE' ? 'btn-primary' : 'btn-outline'}">Candidats</a>
+                <a th:href="@{/admin/users(role='RECRUITER')}" class="btn btn-sm" th:classappend="${selectedRole == 'RECRUITER' ? 'btn-primary' : 'btn-outline'}">Recruteurs</a>
+            </div>
+
+            <!-- Users Table -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Utilisateur</th>
+                                <th>Email</th>
+                                <th>Rôle</th>
+                                <th>Date d'inscription</th>
+                                <th>Statut Compte</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${users}">
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <div class="user-avatar" th:text="${u.firstname != null ? u.firstname.substring(0, 1) : 'U'}">U</div>
+                                        <div>
+                                            <strong style="color: var(--primary);" th:text="${u.firstname + ' ' + u.lastname}">Nom Prénom</strong>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${u.email}">email@exemple.com</td>
+                                <td>
+                                    <span class="badge badge-primary" th:if="${u.getrole().name() == 'CONDIDATE' or u.getrole().name() == 'CANDIDATE'}">Candidat</span>
+                                    <span class="badge badge-warning" th:if="${u.getrole().name() == 'RECRUITER'}">Recruteur</span>
+                                    <span class="badge badge-danger" th:if="${u.getrole().name() == 'ADMIN'}">Admin</span>
+                                </td>
+                                <td class="text-sm text-secondary" th:text="${u.createdAt != null ? #temporals.format(u.createdAt, 'dd/MM/yyyy') : '-'}">01/01/2026</td>
+                                <td>
+                                    <span class="badge badge-success" th:if="${u.isEnabled()}">Actif</span>
+                                    <span class="badge badge-danger" th:if="${!u.isEnabled()}">Suspendu / Bloqué</span>
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 0.35rem; align-items: center;" th:if="${u.getrole().name() != 'ADMIN'}">
+                                        <!-- Activate / Deactivate -->
+                                        <form th:if="${!u.isEnabled()}" th:action="@{/admin/users/{id}/activate(id=${u.id}, role=${selectedRole})}" method="post" style="margin: 0;">
+                                            <button type="submit" class="btn btn-success btn-sm" title="Activer ce compte">
+                                                <i data-lucide="user-check" style="width: 14px; height: 14px;"></i>
+                                                <span>Activer</span>
+                                            </button>
+                                        </form>
+
+                                        <form th:if="${u.isEnabled()}" th:action="@{/admin/users/{id}/deactivate(id=${u.id}, role=${selectedRole})}" method="post" style="margin: 0;" onsubmit="return confirm('Êtes-vous sûr de vouloir suspendre ce compte ?');">
+                                            <button type="submit" class="btn btn-outline btn-sm" title="Suspendre ce compte" style="color: var(--alert); border-color: var(--alert-border);">
+                                                <i data-lucide="user-x" style="width: 14px; height: 14px;"></i>
+                                                <span>Désactiver</span>
+                                            </button>
+                                        </form>
+
+                                        <!-- Delete -->
+                                        <form th:action="@{/admin/users/{id}/delete(id=${u.id}, role=${selectedRole})}" method="post" style="margin: 0;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur et toutes ses données associées ?');">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Supprimer définitivement">
+                                                <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${totalPages != null and totalPages > 1}" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem;">
+                <a th:if="${currentPage > 0}" th:href="@{/admin/users(page=${currentPage - 1}, role=${selectedRole})}" class="btn btn-outline btn-sm">Précédent</a>
+                <span class="btn btn-primary btn-sm" th:text="${currentPage + 1} + ' / ' + ${totalPages}">1 / 1</span>
+                <a th:if="${currentPage + 1 < totalPages}" th:href="@{/admin/users(page=${currentPage + 1}, role=${selectedRole})}" class="btn btn-outline btn-sm">Suivant</a>
+            </div>
+
+        </main>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

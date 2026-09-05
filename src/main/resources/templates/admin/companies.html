@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Administration - Entreprises')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside th:replace="~{fragments/sidebar :: admin('companies')}"></aside>
+
+        <!-- Main Companies View -->
+        <main class="dashboard-main">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Gestion de Toutes les Entreprises</h1>
+                    <p class="page-subtitle">Supervision globale et suppression des profils d'entreprises non conformes.</p>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Companies Table -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Entreprise</th>
+                                <th>Site Web</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="c : ${companies}">
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <div class="company-logo-fallback" style="width: 40px; height: 40px; font-size: 1rem;" th:text="${c.name != null ? c.name.substring(0, 1).toUpperCase() : 'E'}">E</div>
+                                        <strong style="color: var(--primary);" th:text="${c.name}">Nom Entreprise</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a th:if="${c.website}" th:href="${c.website.startsWith('http') ? c.website : 'https://' + c.website}" target="_blank" class="text-sm" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                        <span th:text="${c.website}">www.site.com</span>
+                                        <i data-lucide="external-link" style="width: 12px; height: 12px;"></i>
+                                    </a>
+                                </td>
+                                <td class="text-sm text-secondary" style="max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" th:text="${c.description}">
+                                    Description...
+                                </td>
+                                <td>
+                                    <form th:action="@{/admin/companies/{id}/delete(id=${c.id})}" method="post" style="margin: 0;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette entreprise ? Toutes les offres et candidatures associées seront supprimées.');">
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Supprimer l'entreprise">
+                                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                            <span>Supprimer</span>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${totalPages != null and totalPages > 1}" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem;">
+                <a th:if="${currentPage > 0}" th:href="@{/admin/companies(page=${currentPage - 1})}" class="btn btn-outline btn-sm">Précédent</a>
+                <span class="btn btn-primary btn-sm" th:text="${currentPage + 1} + ' / ' + ${totalPages}">1 / 1</span>
+                <a th:if="${currentPage + 1 < totalPages}" th:href="@{/admin/companies(page=${currentPage + 1})}" class="btn btn-outline btn-sm">Suivant</a>
+            </div>
+
+        </main>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

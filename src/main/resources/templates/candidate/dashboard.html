@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Espace Candidat - Dashboard')}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: navbar}"></header>
+
+<div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/sidebar :: candidate('dashboard')}"></aside>
+
+    <!-- Main Dashboard View -->
+    <main class="dashboard-main">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Bienvenue, <span th:text="${user.firstname}">Candidat</span> 👋</h1>
+                <p class="page-subtitle">Suivez vos candidatures et découvrez les offres adaptées à votre profil.</p>
+            </div>
+            <div>
+                <a th:href="@{/jobs}" class="btn btn-primary">
+                    <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                    <span>Explorer les offres</span>
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <!-- Profile Alert if CV is missing -->
+        <div th:if="${profile.cvurl == null}" class="alert alert-warning">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <i data-lucide="alert-circle" style="width: 24px; height: 24px;"></i>
+                <div>
+                    <strong>CV non renseigné :</strong> Vous devez ajouter votre CV au format PDF pour pouvoir postuler aux offres d'emploi.
+                </div>
+            </div>
+            <a th:href="@{/candidate/profile}" class="btn btn-sm btn-primary">Ajouter un CV</a>
+        </div>
+
+        <!-- Statistics Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Candidatures Totales</div>
+                    <div class="stat-value" th:text="${totalApps}">0</div>
+                </div>
+                <div class="stat-icon-wrapper stat-blue">
+                    <i data-lucide="send" style="width: 24px; height: 24px;"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">En Attente</div>
+                    <div class="stat-value" th:text="${pendingApps}">0</div>
+                </div>
+                <div class="stat-icon-wrapper stat-amber">
+                    <i data-lucide="clock" style="width: 24px; height: 24px;"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Acceptées</div>
+                    <div class="stat-value" th:text="${acceptedApps}">0</div>
+                </div>
+                <div class="stat-icon-wrapper stat-green">
+                    <i data-lucide="check-circle" style="width: 24px; height: 24px;"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Compétences</div>
+                    <div class="stat-value" th:text="${profile.skills != null ? profile.skills.size() : 0}">0</div>
+                </div>
+                <div class="stat-icon-wrapper stat-slate">
+                    <i data-lucide="award" style="width: 24px; height: 24px;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Columns Section -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+
+            <!-- Recent Applications -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 style="font-size: 1.15rem; color: var(--primary);">Mes Dernières Candidatures</h3>
+                    <a th:href="@{/candidate/applications}" class="text-sm font-semibold">Voir tout &rarr;</a>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <div th:if="${recentApps == null or recentApps.isEmpty()}" style="padding: 2.5rem; text-align: center;">
+                        <p class="text-secondary" style="margin-bottom: 1rem;">Vous n'avez pas encore postulé à des offres d'emploi.</p>
+                        <a th:href="@{/jobs}" class="btn btn-outline-primary btn-sm">Trouver un poste</a>
+                    </div>
+
+                    <div th:if="${recentApps != null and !recentApps.isEmpty()}" class="table-responsive" style="border: none; border-radius: 0;">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Poste</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="app : ${recentApps}">
+                                <td>
+                                    <strong th:if="${app.offer != null}" th:text="${app.offer.title}">Titre du poste</strong>
+                                    <strong th:unless="${app.offer != null}" class="text-muted"><em>Offre supprimée</em></strong>
+                                    <div th:if="${app.offer != null}" class="text-xs text-muted" th:text="${app.offer.company.name}">Entreprise</div>
+                                </td>
+                                <td class="text-sm text-secondary" th:text="${#temporals.format(app.appliedat, 'dd/MM/yyyy')}">01/01/2026</td>
+                                <td>
+                                    <span class="badge badge-warning" th:if="${app.status.name() == 'PENDING'}">En attente</span>
+                                    <span class="badge badge-success" th:if="${app.status.name() == 'ACCEPTED'}">Acceptée</span>
+                                    <span class="badge badge-danger" th:if="${app.status.name() == 'REJECTED'}">Rejetée</span>
+                                    <span class="badge badge-secondary" th:if="${app.status.name() == 'WITHDRAWN'}">Annulée</span>
+                                </td>
+                                <td>
+                                    <a th:if="${app.offer != null}" th:href="@{/jobs/{id}(id=${app.offer.id})}" class="btn btn-outline btn-sm">Détail</a>
+                                    <span th:unless="${app.offer != null}" class="text-xs text-muted">—</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Profile Overview -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 style="font-size: 1.15rem; color: var(--primary);">Mon Profil</h3>
+                    <a th:href="@{/candidate/profile}" class="text-sm font-semibold">Modifier</a>
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+                        <div class="user-avatar" style="width: 48px; height: 48px; font-size: 1.25rem;" th:text="${user.firstname != null and !user.firstname.isEmpty() ? user.firstname.substring(0,1) : 'C'}">C</div>
+                        <div>
+                            <h4 style="font-size: 1.1rem; color: var(--primary);" th:text="${user.firstname + ' ' + user.lastname}">Nom Prénom</h4>
+                            <div class="text-xs text-secondary" th:text="${user.email}">email@exemple.com</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <div class="text-xs font-semibold text-muted" style="text-transform: uppercase; margin-bottom: 0.25rem;">Téléphone</div>
+                        <div class="text-sm" th:text="${profile.phone != null and !profile.phone.isEmpty() ? profile.phone : 'Non renseigné'}">+33 6 00 00 00 00</div>
+                    </div>
+
+                    <div style="margin-bottom: 1.25rem;">
+                        <div class="text-xs font-semibold text-muted" style="text-transform: uppercase; margin-bottom: 0.25rem;">CV Actuel</div>
+                        <div th:if="${profile.cvurl != null}">
+                            <a th:href="@{/files/cv/{filename}(filename=${cvFilename})}" target="_blank" class="btn btn-outline-primary btn-sm" style="width: 100%;">
+                                <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                <span>Consulter mon CV (PDF)</span>
+                            </a>
+                        </div>
+                        <div th:if="${profile.cvurl == null}" class="text-sm text-muted">
+                            Aucun CV téléversé
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-xs font-semibold text-muted" style="text-transform: uppercase; margin-bottom: 0.5rem;">Compétences</div>
+                        <div class="skills-list">
+                            <span th:each="s : ${profile.skills}" class="skill-tag" th:text="${s.name}">Java</span>
+                            <span th:if="${profile.skills == null or profile.skills.isEmpty()}" class="text-xs text-muted">Aucune compétence ajoutée</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

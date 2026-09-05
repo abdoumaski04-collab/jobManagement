@@ -24,13 +24,14 @@ public class CandidateProfileController {
 
     private final CandidateProfileService service;
 
-    @GetMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<CandidatePofileResponse> updateprofile(
             @Valid @RequestBody updateCandidateProfileRequest request,
             @AuthenticationPrincipal User user
     ) {
         return service.updateprofile(request, user);
     }
+
 
     @GetMapping()
     public ResponseEntity<CandidatePofileResponse> updateprofile(

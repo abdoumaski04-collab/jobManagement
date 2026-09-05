@@ -41,7 +41,7 @@ public class ApplicationController {
 
     @GetMapping("/{appId}/annuler")
     @PreAuthorize("hasRole('CANDIDATE')")
-    public ResponseEntity<ApplicationResponse> annulerApp(@AuthenticationPrincipal User user,Long appId){
+    public ResponseEntity<ApplicationResponse> annulerApp(@AuthenticationPrincipal User user,@PathVariable long appId){
         ApplicationResponse response=appser.annulerApp(user,appId);
         return ResponseEntity.ok(response);
     }

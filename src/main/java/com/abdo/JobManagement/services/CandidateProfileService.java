@@ -31,8 +31,8 @@ public class CandidateProfileService {
 
         User user=userrepo.findById(Currentuser.getId()).orElseThrow(()->new RessourceNotFoundException("user not found"));
         Condidateprofile profile=profilerepo.findById(Currentuser.getId()).orElseThrow(()->new RessourceNotFoundException("user not found"));
-        if(request.getFistname()!=null) user.setFirstname(user.getFirstname());
-        if(request.getLastname()!=null) user.setLastname(user.getLastname());
+        if(request.getFistname()!=null) user.setFirstname(request.getFistname());
+        if(request.getLastname()!=null) user.setLastname(request.getLastname());
 
         userrepo.save(user);
 
@@ -47,7 +47,7 @@ public class CandidateProfileService {
     public ResponseEntity<CandidatePofileResponse> getProfile(User Currentuser){
         User user=userrepo.findById(Currentuser.getId()).orElseThrow(()->new RessourceNotFoundException("user not found"));
         Condidateprofile profile=profilerepo.findById(Currentuser.getId()).orElseThrow(()->new RessourceNotFoundException("user not found"));
-        return ResponseEntity.ok(new CandidatePofileResponse(user.getId(),user.getEmail(),user.getEmail(),user.getLastname(),profile.getBio(), profile.getPhone()));
+        return ResponseEntity.ok(new CandidatePofileResponse(user.getId(),user.getEmail(),user.getFirstname(),user.getLastname(),profile.getBio(), profile.getPhone()));
 
     }
     private String normalise(String name){

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Connexion')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <main class="main-content auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="brand-icon" style="margin: 0 auto 1rem auto; width: 48px; height: 48px;">
+                    <i data-lucide="lock" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h1 class="auth-title">Connexion</h1>
+                <p class="text-sm">Accédez à votre espace sécurisé</p>
+            </div>
+
+            <!-- Login Error / Logout / Registered Alerts -->
+            <div th:if="${param.error}" class="alert alert-danger">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="alert-circle" style="width: 18px; height: 18px;"></i>
+                    <span>Email ou mot de passe incorrect.</span>
+                </div>
+                <button type="button" class="alert-close">&times;</button>
+            </div>
+
+            <div th:if="${param.logout}" class="alert alert-success">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="check" style="width: 18px; height: 18px;"></i>
+                    <span>Vous avez été déconnecté avec succès.</span>
+                </div>
+                <button type="button" class="alert-close">&times;</button>
+            </div>
+
+            <div th:if="${param.registered}" class="alert alert-success">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i>
+                    <span>Compte créé avec succès ! Connectez-vous.</span>
+                </div>
+                <button type="button" class="alert-close">&times;</button>
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label class="form-label" for="email">Adresse Email</label>
+                    <div style="position: relative;">
+                        <input type="email" id="email" name="email" class="form-control" placeholder="nom@exemple.com" required autofocus>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+                        <label class="form-label" for="password" style="margin-bottom: 0;">Mot de passe</label>
+                    </div>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; margin-top: 1rem;">
+                    <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
+                    <span>Se connecter</span>
+                </button>
+            </form>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-light);">
+                <a th:href="@{/}" class="btn btn-outline" style="width: 100%;">
+                    <i data-lucide="house" style="width: 16px; height: 16px;"></i>
+                    <span>Retour à l'accueil</span>
+                </a>
+                <a th:href="@{/register}" class="btn btn-outline-primary" style="width: 100%;">
+                    <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i>
+                    <span>Créer un compte</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

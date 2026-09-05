@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${offer.id != null ? 'Modifier Offre' : 'Publier une Offre'})}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside th:replace="~{fragments/sidebar :: recruiter('offers')}"></aside>
+
+        <!-- Main Form -->
+        <main class="dashboard-main">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title" th:text="${offer.id != null ? 'Modifier cette Offre' : 'Publier une Offre'}">Offre d'Emploi</h1>
+                    <p class="page-subtitle">Définissez le poste, les responsabilités et le profil recherché.</p>
+                </div>
+                <div>
+                    <a th:href="@{/recruiter/offers}" class="btn btn-outline">
+                        <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+                        <span>Retour aux offres</span>
+                    </a>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- If recruiter has no companies -->
+            <div th:if="${companies == null or companies.isEmpty()}" class="alert alert-warning">
+                <div>
+                    <strong>Aucune entreprise trouvée :</strong> Vous devez d'abord créer au moins une entreprise avant de publier une offre.
+                </div>
+                <a th:href="@{/recruiter/companies/new}" class="btn btn-sm btn-primary">Créer une entreprise</a>
+            </div>
+
+            <div th:if="${companies != null and !companies.isEmpty()}" class="card" style="max-width: 750px;">
+                <div class="card-body" style="padding: 2.5rem;">
+                    <form th:action="@{/recruiter/offers/save}" method="post">
+                        <!-- N'envoyer le champ id et companyId QUE s'ils existent en mode édition -->
+                        <input type="hidden" name="id" th:if="${offer.id != null}" th:value="${offer.id}">
+                        <input type="hidden" name="companyId" th:if="${offer.id != null and offer.company != null}" th:value="${offer.company.id}">
+
+                        <!-- Company Selection en mode création -->
+                        <div class="form-group" th:if="${offer.id == null}">
+                            <label class="form-label" for="companyId">Entreprise de rattachement</label>
+                            <select id="companyId" name="companyId" class="form-control form-select" required>
+                                <option value="" disabled selected>Sélectionnez une entreprise</option>
+                                <option th:each="c : ${companies}" 
+                                        th:value="${c.id}" 
+                                        th:text="${c.name}"
+                                        th:selected="${selectedCompanyId != null and selectedCompanyId == c.id}"></option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="title">Intitulé du Poste</label>
+                            <input type="text" id="title" name="title" class="form-control" th:value="${offer.title}" placeholder="Ex: Développeur Java / Spring Boot Senior" required maxlength="50">
+                            <div class="form-help">Maximum 50 caractères.</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label class="form-label" for="location">Localisation / Ville</label>
+                                <input type="text" id="location" name="location" class="form-control" th:value="${offer.location}" placeholder="Ex: Paris (Télétravail partiel)" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="salaryrange">Fourchette de Salaire</label>
+                                <input type="text" id="salaryrange" name="salaryrange" class="form-control" th:value="${offer.salaryrange}" placeholder="Ex: 50k - 60k €" required maxlength="50">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="description">Description Complète du Poste & Profil Recherché</label>
+                            <textarea id="description" name="description" class="form-control" rows="8" placeholder="Détaillez les missions, technologies utilisées, prérequis, avantages..." required maxlength="3000" th:text="${offer.description}"></textarea>
+                            <div class="form-help">Maximum 3000 caractères.</div>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                            <button type="submit" class="btn btn-primary">
+                                <i data-lucide="check" style="width: 18px; height: 18px;"></i>
+                                <span th:text="${offer.id != null ? 'Mettre à jour cette offre' : 'Publier cette offre'}">Publier l'offre</span>
+                            </button>
+                            <a th:href="@{/recruiter/offers}" class="btn btn-outline">Annuler</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

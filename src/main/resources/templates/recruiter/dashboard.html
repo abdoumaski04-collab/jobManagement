@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Espace Recruteur - Dashboard')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside th:replace="~{fragments/sidebar :: recruiter('dashboard')}"></aside>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard-main">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Tableau de Bord Recruteur</h1>
+                    <p class="page-subtitle">Pilotez vos entreprises, vos offres d'emploi et les candidatures reçues.</p>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <a th:href="@{/recruiter/companies/new}" class="btn btn-outline">
+                        <i data-lucide="building-2" style="width: 16px; height: 16px;"></i>
+                        <span>Nouvelle Entreprise</span>
+                    </a>
+                    <a th:href="@{/recruiter/offers/new}" class="btn btn-primary">
+                        <i data-lucide="plus-circle" style="width: 18px; height: 18px;"></i>
+                        <span>Publier une Offre</span>
+                    </a>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Statistics Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Mes Entreprises</div>
+                        <div class="stat-value" th:text="${totalCompanies}">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper stat-blue">
+                        <i data-lucide="building" style="width: 24px; height: 24px;"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Offres Publiées</div>
+                        <div class="stat-value" th:text="${totalOffers}">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper stat-slate">
+                        <i data-lucide="file-text" style="width: 24px; height: 24px;"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Offres Actives</div>
+                        <div class="stat-value" th:text="${activeOffers}">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper stat-green">
+                        <i data-lucide="check-circle" style="width: 24px; height: 24px;"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Candidatures En Attente</div>
+                        <div class="stat-value" th:text="${pendingAppsCount}">0</div>
+                    </div>
+                    <div class="stat-icon-wrapper stat-amber">
+                        <i data-lucide="users" style="width: 24px; height: 24px;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Offers Section -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h3 style="font-size: 1.15rem; color: var(--primary);">Mes Offres d'Emploi Récentes</h3>
+                    <a th:href="@{/recruiter/offers}" class="text-sm font-semibold">Toutes mes offres &rarr;</a>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <div th:if="${recentOffers == null or recentOffers.isEmpty()}" style="padding: 3rem; text-align: center;">
+                        <p class="text-secondary" style="margin-bottom: 1rem;">Vous n'avez pas encore publié d'offres d'emploi.</p>
+                        <a th:href="@{/recruiter/offers/new}" class="btn btn-primary btn-sm">Créer ma première offre</a>
+                    </div>
+
+                    <div th:if="${recentOffers != null and !recentOffers.isEmpty()}" class="table-responsive" style="border: none; border-radius: 0;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Entreprise</th>
+                                    <th>Localisation</th>
+                                    <th>Statut</th>
+                                    <th>Candidatures</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="offer : ${recentOffers}">
+                                    <td>
+                                        <strong th:text="${offer.title}">Intitulé du poste</strong>
+                                    </td>
+                                    <td th:text="${offer.company != null ? offer.company.name : ''}">Entreprise</td>
+                                    <td class="text-sm text-secondary" th:text="${offer.location}">Paris</td>
+                                    <td>
+                                        <span class="badge badge-success" th:if="${offer.status.name() == 'OPEN'}">Ouverte</span>
+                                        <span class="badge badge-danger" th:if="${offer.status.name() == 'CLOSED'}">Fermée</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/recruiter/offers/{id}/applications(id=${offer.id})}" class="btn btn-sm btn-outline-primary">
+                                            <i data-lucide="users" style="width: 14px; height: 14px;"></i>
+                                            <span>Voir candidats</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; gap: 0.35rem;">
+                                            <a th:href="@{/recruiter/offers/edit/{id}(id=${offer.id})}" class="btn btn-outline btn-sm" title="Modifier">
+                                                <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Espace Recruteur - Mes Offres')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside th:replace="~{fragments/sidebar :: recruiter('offers')}"></aside>
+
+        <!-- Main Offers View -->
+        <main class="dashboard-main">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Mes Offres d'Emploi</h1>
+                    <p class="page-subtitle">Gérez la visibilité de vos annonces et évaluez les candidatures reçues.</p>
+                </div>
+                <div>
+                    <a th:href="@{/recruiter/offers/new}" class="btn btn-primary">
+                        <i data-lucide="plus-circle" style="width: 18px; height: 18px;"></i>
+                        <span>Publier une Offre</span>
+                    </a>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Empty State -->
+            <div th:if="${offers == null or offers.isEmpty()}" class="card" style="text-align: center; padding: 4rem 2rem;">
+                <div class="brand-icon" style="margin: 0 auto 1.5rem auto; width: 64px; height: 64px; background: var(--bg-alt); color: var(--text-muted);">
+                    <i data-lucide="file-plus-2" style="width: 32px; height: 32px;"></i>
+                </div>
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Aucune offre publiée</h3>
+                <p class="text-secondary" style="max-width: 450px; margin: 0 auto 1.5rem auto;">Créez votre première annonce d'emploi pour attirer des candidats qualifiés.</p>
+                <a th:href="@{/recruiter/offers/new}" class="btn btn-primary">Publier une annonce</a>
+            </div>
+
+            <!-- Offers Table -->
+            <div th:if="${offers != null and !offers.isEmpty()}" class="card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Titre du Poste</th>
+                                <th>Entreprise</th>
+                                <th>Localisation</th>
+                                <th>Rémunération</th>
+                                <th>Date Publication</th>
+                                <th>Statut</th>
+                                <th>Candidats</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="offer : ${offers}">
+                                <td>
+                                    <strong style="color: var(--primary);" th:text="${offer.title}">Développeur Java Fullstack</strong>
+                                </td>
+                                <td th:text="${offer.company != null ? offer.company.name : ''}">Entreprise</td>
+                                <td class="text-sm text-secondary" th:text="${offer.location}">Paris</td>
+                                <td class="text-sm" th:text="${offer.salaryrange != null ? offer.salaryrange : 'Non précisé'}">45k - 55k €</td>
+                                <td class="text-sm text-secondary" th:text="${#temporals.format(offer.createdat, 'dd/MM/yyyy')}">01/01/2026</td>
+                                <td>
+                                    <span class="badge badge-success" th:if="${offer.status.name() == 'OPEN'}">Ouverte</span>
+                                    <span class="badge badge-danger" th:if="${offer.status.name() == 'CLOSED'}">Fermée</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/recruiter/offers/{id}/applications(id=${offer.id})}" class="btn btn-outline-primary btn-sm">
+                                        <i data-lucide="users" style="width: 14px; height: 14px;"></i>
+                                        <span>Candidatures</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 0.35rem; align-items: center;">
+                                        <!-- Toggle Open/Close -->
+                                        <form th:action="@{/recruiter/offers/{id}/toggle-status(id=${offer.id})}" method="post" style="margin: 0;">
+                                            <button type="submit" class="btn btn-sm" th:classappend="${offer.status.name() == 'OPEN' ? 'btn-outline' : 'btn-success'}" th:title="${offer.status.name() == 'OPEN' ? 'Fermer cette offre' : 'Rouvrir cette offre'}">
+                                                <i th:data-lucide="${offer.status.name() == 'OPEN' ? 'pause-circle' : 'play-circle'}" style="width: 14px; height: 14px;"></i>
+                                            </button>
+                                        </form>
+
+                                        <!-- Edit -->
+                                        <a th:href="@{/recruiter/offers/edit/{id}(id=${offer.id})}" class="btn btn-outline btn-sm" title="Modifier">
+                                            <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i>
+                                        </a>
+
+                                        <!-- Delete -->
+                                        <form th:action="@{/recruiter/offers/delete/{id}(id=${offer.id})}" method="post" style="margin: 0;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ? Les candidatures associées seront annulées.');">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                                                <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

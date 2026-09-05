@@ -1,39 +1,37 @@
 package com.abdo.JobManagement.dto.auth;
 
-
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
 public class registerrequest {
 
-    @Column(nullable = false,unique = true)
-    @Size(max = 255)
-    @Email
+    @NotBlank(message = "email obligatoire")
+    @Email(message = "email invalide")
+    @Size(max = 255, message = "ne pas dépasser 255 caractères")
     private String email;
 
-    @Column(nullable = false)
-    @Size(max = 255)
+    @NotBlank(message = "mot de passe obligatoire")
+    @Size(max = 255, message = "ne pas dépasser 255 caractères")
     private String password;
 
-    @Column(name = "first_name",nullable = false)
-    @Size(max = 100)
+    @NotBlank(message = "firstname obligatoire")
+    @Size(max = 100, message = "ne pas dépasser 100 caractères")
     private String firstname;
 
-    @Column(name = "last_name",nullable = false)
-    @Size(max = 100)
+    @NotBlank(message = "lastname obligatoire")
+    @Size(max = 100, message = "ne pas dépasser 100 caractères")
     private String lastname;
 
-    @NotNull
+    @NotNull(message = "role obligatoire")
     private RegisterRole role;
 
-    public enum RegisterRole{
+    public enum RegisterRole {
         RECRUITER,
         CANDIDATE,
         ADMIN

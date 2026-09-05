@@ -3,6 +3,8 @@ package com.abdo.JobManagement.services;
 
 import com.abdo.JobManagement.dto.joboffer.JobofferRequest;
 import com.abdo.JobManagement.dto.joboffer.JobofferResponse;
+import com.abdo.JobManagement.entities.application;
+import com.abdo.JobManagement.entities.applicationstatus;
 import com.abdo.JobManagement.entities.company;
 import com.abdo.JobManagement.entities.joboffer;
 import com.abdo.JobManagement.entities.jobstatus;
@@ -10,6 +12,7 @@ import com.abdo.JobManagement.entities.user.Recruiter;
 import com.abdo.JobManagement.entities.user.User;
 import com.abdo.JobManagement.exceptions.RessourceNotFoundException;
 import com.abdo.JobManagement.mapper.JobofferMapper;
+import com.abdo.JobManagement.repositories.ApplicationRepository;
 import com.abdo.JobManagement.repositories.JobofferRepository;
 import com.abdo.JobManagement.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -19,12 +22,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class JobofferService {
 
     private final JobofferRepository repo;
     private final UserRepository userrepo;
+    private final com.abdo.JobManagement.repositories.CompanyRepository companyrepo;
+    private final ApplicationRepository apprepo;
 
     @Transactional
     public Page<JobofferResponse> getAllMyOffers(User user, Pageable pageable){
@@ -43,25 +50,26 @@ public class JobofferService {
 
     @Transactional
     public JobofferResponse addoffer(company company, Recruiter recruiter, JobofferRequest request){
-
-        if(!(company.getOwner().getId().equals(recruiter.getId()))){
+        company comp = (company.getId() != null) ? companyrepo.findById(company.getId()).orElse(company) : company;
+        if (!comp.getOwner().getId().equals(recruiter.getId())){
             throw new AccessDeniedException("you are not the owner of this company to share offer");
         }
-        joboffer offer=JobofferMapper.toEntity(request,company);
+        joboffer offer = JobofferMapper.toEntity(request, comp);
         repo.save(offer);
         return JobofferMapper.toResponse(offer);
     }
 
     @Transactional
-    public  JobofferResponse editoffer(Long id,Recruiter recruiter,JobofferRequest request){
-        joboffer existing=repo.findById(id).orElseThrow(()->new RessourceNotFoundException("offer not found"));
-        if(!(existing.getCompany().getOwner().getId().equals(recruiter.getId()))){
+    public JobofferResponse editoffer(Long id, Recruiter recruiter, JobofferRequest request){
+        joboffer existing = repo.findById(id).orElseThrow(()->new RessourceNotFoundException("offer not found"));
+        if (!existing.getCompany().getOwner().getId().equals(recruiter.getId())){
             throw new AccessDeniedException("you are not the owner of this company to share offer");
         }
 
-        joboffer newoffer=JobofferMapper.toEntity(request,existing.getCompany());
+        joboffer newoffer = JobofferMapper.toEntity(request, existing.getCompany());
         existing.setTitle(newoffer.getTitle());
         existing.setDescription(newoffer.getDescription());
+        existing.setLocation(newoffer.getLocation());
         existing.setSalaryrange(newoffer.getSalaryrange());
 
         repo.save(existing);
@@ -70,12 +78,20 @@ public class JobofferService {
     }
 
     @Transactional
-    public void deleteoffer(Long id,Recruiter recruiter,company company){
-        if(!(company.getOwner().getId().equals(recruiter.getId()))){
+    public void deleteoffer(Long id, Recruiter recruiter, company company){
+        joboffer existing = repo.findById(id).orElseThrow(()->new RessourceNotFoundException("offer not found"));
+        if (!existing.getCompany().getOwner().getId().equals(recruiter.getId())){
             throw new AccessDeniedException("you are not the owner of this company to share offer");
         }
 
-        joboffer existing=repo.findById(id).orElseThrow(()->new RessourceNotFoundException("offer not found"));
+        List<application> applications = apprepo.findByOfferId(id);
+        if (!applications.isEmpty()) {
+            for (application a : applications) {
+                a.setStatus(applicationstatus.REJECTED);
+                a.setOffer(null);
+            }
+            apprepo.saveAll(applications);
+        }
 
         repo.deleteById(id);
     }

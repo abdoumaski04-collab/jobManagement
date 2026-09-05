@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Espace Recruteur - Mes Entreprises')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside th:replace="~{fragments/sidebar :: recruiter('companies')}"></aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Mes Entreprises</h1>
+                    <p class="page-subtitle">Gérez les profils de vos entreprises et leurs informations publiques.</p>
+                </div>
+                <div>
+                    <a th:href="@{/recruiter/companies/new}" class="btn btn-primary">
+                        <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
+                        <span>Ajouter une Entreprise</span>
+                    </a>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Empty State -->
+            <div th:if="${companies == null or companies.isEmpty()}" class="card" style="text-align: center; padding: 4rem 2rem;">
+                <div class="brand-icon" style="margin: 0 auto 1.5rem auto; width: 64px; height: 64px; background: var(--bg-alt); color: var(--text-muted);">
+                    <i data-lucide="building" style="width: 32px; height: 32px;"></i>
+                </div>
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Aucune entreprise enregistrée</h3>
+                <p class="text-secondary" style="max-width: 450px; margin: 0 auto 1.5rem auto;">Vous devez créer une entreprise avant de pouvoir publier des offres d'emploi.</p>
+                <a th:href="@{/recruiter/companies/new}" class="btn btn-primary">Créer une entreprise</a>
+            </div>
+
+            <!-- Companies List -->
+            <div th:if="${companies != null and !companies.isEmpty()}" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem;">
+                <div th:each="c : ${companies}" class="card">
+                    <div class="card-body">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="company-logo-fallback" th:text="${c.name != null ? c.name.substring(0, 1).toUpperCase() : 'E'}">E</div>
+                            <div>
+                                <h3 style="font-size: 1.2rem; color: var(--primary);" th:text="${c.name}">Nom Entreprise</h3>
+                                <a th:if="${c.website}" th:href="${c.website.startsWith('http') ? c.website : 'https://' + c.website}" target="_blank" class="text-xs" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <span th:text="${c.website}">www.site.com</span>
+                                    <i data-lucide="external-link" style="width: 12px; height: 12px;"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <p class="text-sm text-secondary" style="margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;" th:text="${c.description}">
+                            Description de l'entreprise.
+                        </p>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 1rem;">
+                            <a th:href="@{/recruiter/offers/new(companyId=${c.id})}" class="btn btn-outline-primary btn-sm">
+                                <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                                <span>Créer une offre</span>
+                            </a>
+
+                            <div style="display: flex; gap: 0.35rem;">
+                                <a th:href="@{/recruiter/companies/edit/{id}(id=${c.id})}" class="btn btn-outline btn-sm" title="Modifier">
+                                    <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i>
+                                </a>
+                                <form th:action="@{/recruiter/companies/delete/{id}(id=${c.id})}" method="post" style="margin: 0;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette entreprise ? Toutes les offres et candidatures associées seront également supprimées.');">
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                                        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

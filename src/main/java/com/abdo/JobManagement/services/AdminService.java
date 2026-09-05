@@ -63,7 +63,11 @@ public class AdminService {
             List<application> applications = apprepo.findByOfferId(id);
             if (!applications.isEmpty()) {
                 rejectAllApplication(applications);
-               }
+                for (application a : applications) {
+                    a.setOffer(null);
+                }
+                apprepo.saveAll(applications);
+            }
             offerrepo.deleteById(id);
         }
     }
@@ -159,15 +163,18 @@ public class AdminService {
     }
 
     @Transactional
-    public MessageResponse deleteJoboffer(User user,Long idoffer) {
+    public MessageResponse deleteJoboffer(User user, Long idoffer) {
         adminrepo.findById(user.getId()).orElseThrow(() -> new RessourceNotFoundException("admin not found"));
 
-
-            List<application> applications = apprepo.findByOfferId(idoffer);
-            if (!applications.isEmpty()) {
-                rejectAllApplication(applications);
+        List<application> applications = apprepo.findByOfferId(idoffer);
+        if (!applications.isEmpty()) {
+            rejectAllApplication(applications);
+            for (application a : applications) {
+                a.setOffer(null);
             }
-            offerrepo.deleteById(idoffer);
-            return new MessageResponse("offre est supprimé et leurs applications sont refusés");
+            apprepo.saveAll(applications);
         }
+        offerrepo.deleteById(idoffer);
+        return new MessageResponse("Offre est supprimée et leurs applications sont refusées");
+    }
     }

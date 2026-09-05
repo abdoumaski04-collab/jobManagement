@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Administration - Offres')}"></head>
+<body>
+
+    <header th:replace="~{fragments/layout :: navbar}"></header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside th:replace="~{fragments/sidebar :: admin('offers')}"></aside>
+
+        <!-- Main Offers View -->
+        <main class="dashboard-main">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Modération de Toutes les Offres</h1>
+                    <p class="page-subtitle">Visualisez et modérez l'ensemble des annonces publiées sur le portail.</p>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Offers Table -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Titre du Poste</th>
+                                <th>Entreprise</th>
+                                <th>Localisation</th>
+                                <th>Rémunération</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="offer : ${offers}">
+                                <td>
+                                    <strong style="color: var(--primary);" th:text="${offer.title}">Titre</strong>
+                                </td>
+                                <td th:text="${offer.company != null ? offer.company.name : ''}">Entreprise</td>
+                                <td class="text-sm text-secondary" th:text="${offer.location}">Paris</td>
+                                <td class="text-sm" th:text="${offer.salaryrange}">45k - 55k €</td>
+                                <td>
+                                    <span class="badge badge-success" th:if="${offer.status.name() == 'OPEN'}">Ouverte</span>
+                                    <span class="badge badge-danger" th:if="${offer.status.name() == 'CLOSED'}">Fermée</span>
+                                </td>
+                                <td class="text-sm text-secondary" th:text="${#temporals.format(offer.createdat, 'dd/MM/yyyy')}">01/01/2026</td>
+                                <td>
+                                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                        <a th:href="@{/jobs/{id}(id=${offer.id})}" target="_blank" class="btn btn-outline btn-sm" title="Voir l'annonce">
+                                            <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+                                        </a>
+
+                                        <form th:action="@{/admin/offers/{id}/delete(id=${offer.id})}" method="post" style="margin: 0;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer définitivement cette offre ?');">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Supprimer l'offre">
+                                                <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                                <span>Supprimer</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${totalPages != null and totalPages > 1}" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem;">
+                <a th:if="${currentPage > 0}" th:href="@{/admin/offers(page=${currentPage - 1})}" class="btn btn-outline btn-sm">Précédent</a>
+                <span class="btn btn-primary btn-sm" th:text="${currentPage + 1} + ' / ' + ${totalPages}">1 / 1</span>
+                <a th:if="${currentPage + 1 < totalPages}" th:href="@{/admin/offers(page=${currentPage + 1})}" class="btn btn-outline btn-sm">Suivant</a>
+            </div>
+
+        </main>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
